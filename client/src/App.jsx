@@ -15,6 +15,7 @@ function App() {
 					<NumberBubble />
 					<NumberBubble />
 				</div>
+				<p className="text-xs">proudly funded by the patriarchy ™️</p>
 			</div>
 		</>
 	);
