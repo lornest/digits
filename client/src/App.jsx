@@ -1,11 +1,8 @@
-import { useState } from 'react'
-import NumberBubble from './components/Number.jsx'
+import NumberBubble from './components/NumberBubble.jsx'
 import './App.css'
 import Target from './components/Target.jsx'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <>
       <Target />
