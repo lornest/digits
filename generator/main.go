@@ -42,18 +42,10 @@ func main() {
 		}
 	}
 
-	fiveResults := []int{}
-	for _, result := range filteredResults {
-		if result > 400 && result < 500 {
-			fiveResults = append(fiveResults, result)
-		}
-	}
 	// Pick a random number from the filtered results
 	selectedNumber := roundOneResults[rand.Intn(len(roundOneResults))]
-	selectedFiveNumber := fiveResults[rand.Intn(len(fiveResults))]
 
 	fmt.Println("Selected number between 50 and 100:", selectedNumber)
-	fmt.Println("Selected number between 400 and 500:", selectedFiveNumber)
 }
 
 func generateResults(current int, operations int, maxOperations int, numbers []int, results *[]int) {
