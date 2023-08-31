@@ -1,8 +1,8 @@
 terraform {
   required_providers {
-    heroku = {
-      source  = "heroku/heroku"
-      version = "~> 5.0"
+    google = {
+      source  = "hashicorp/google"
+      version = "~> 4.0"
     }
   }
 }

@@ -1,5 +1,5 @@
-variable "heroku_api_key" {
+variable "gcp_creds" {
   type        = string
   sensitive   = true
-  description = "API key for Heroku"
+  description = "GCP credentials"
 }
