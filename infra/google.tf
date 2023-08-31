@@ -3,20 +3,14 @@ provider "google" {
   region  = "europe-west1"
 }
 
-resource "google_cloud_run_service" "digits-server" {
-  name     = "digits-server"
+resource "google_cloud_run_v2_service" "digits-server-test" {
+  name     = "digits-server-test"
   location = "europe-west1"
+  ingress  = "INGRESS_TRAFFIC_ALL"
 
   template {
-    spec {
-      containers {
-        image = "us-docker.pkg.dev/cloudrun/container/hello"
-      }
+    containers {
+      image = "us-docker.pkg.dev/cloudrun/container/hello"
     }
-  }
-
-  traffic {
-    percent         = 100
-    latest_revision = true
   }
 }
