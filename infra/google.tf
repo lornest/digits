@@ -1,6 +1,6 @@
 provider "google" {
   project = "digits-397616"
-  region  = "europe-west2"
+  region  = "europe-west1"
 }
 
 resource "google_project_service" "run_api" {
