@@ -10,6 +10,12 @@ resource "google_project_service" "run_api" {
   disable_on_destroy = true
 }
 
+resource "google_project_service" "cloudresourcemanager_api" {
+  service = "cloudresourcemanager.googleapis.com"
+
+  disable_on_destroy = true
+}
+
 resource "google_cloud_run_v2_service" "digits-server-test" {
   name     = "digits-server-test"
   location = "europe-west1"
