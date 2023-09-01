@@ -1,6 +1,6 @@
 provider "google" {
   project = "digits-397616"
-  region  = "europe-west1"
+  region  = "europe-west2"
 }
 
 # Enable the Cloud Run API
