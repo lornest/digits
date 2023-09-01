@@ -1,5 +1,5 @@
 resource "google_storage_bucket" "container-images" {
-  name          = "${var.project_id}-images"
+  name          = "${var.gcp_project_id}-images"
   location      = "europe-west2"
   force_destroy = true
 
