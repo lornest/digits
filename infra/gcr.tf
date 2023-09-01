@@ -7,4 +7,5 @@ resource "google_storage_bucket" "container-images" {
 }
 
 resource "google_container_registry" "container-images" {
+  depends_on = [google_storage_bucket.container-images, google_project_service.cloudresourcemanager_api]
 }
