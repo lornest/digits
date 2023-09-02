@@ -48,6 +48,21 @@ func main() {
 	fmt.Println("Selected number between 50 and 100:", selectedNumber)
 }
 
+func generateRandomNumbers(n int, min int, max int) []int {
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	numbers := make([]int, 6)
+	for i := 0; i < 6; i++ {
+		for {
+			number := r.Intn(25) + 1
+			if !contains(numbers, number) {
+				numbers[i] = number
+				break
+			}
+		}
+	}
+	return numbers
+}
+
 func generateResults(current int, operations int, maxOperations int, numbers []int, results *[]int) {
 	if current < 0 {
 		return
