@@ -1,5 +1,5 @@
 resource "google_project_service" "firestore" {
-  project = google_project.project.project_id
+  project = var.gcp_project_id
   service = "firestore.googleapis.com"
   
   disable_on_destroy = true
