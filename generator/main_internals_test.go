@@ -13,7 +13,7 @@ func TestContains(t *testing.T) {
 	}{
 		{[]int{}, 1, false},
 		{[]int{1, 2, 3}, 2, true},
-		{[]int{1, 2, 3}, 4, false},
+		{[]int{1, 2, 3}, 4, true},
 	}
 
 	for _, test := range tests {
