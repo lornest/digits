@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - 'server/**'
-      - './github/workflows/server-ci.yaml'
+      - '.github/workflows/server-ci.yaml'
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
