@@ -1,0 +1,11 @@
+FROM golang:1.19-alpine
+
+WORKDIR /app
+
+RUN go install github.com/cosmtrek/air@latest
+
+COPY go.mod go.sum .air.toml ./
+RUN go mod download
+
+# Run using air for live reloading
+CMD ["air", "-c", ".air.toml"]

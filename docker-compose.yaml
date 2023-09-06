@@ -1,0 +1,30 @@
+version: '3.8'
+name: digits
+services:
+  fake-gcs:
+    image: fsouza/fake-gcs-server
+    ports:
+      - "4443:4443"
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.local
+    ports:
+      - "3001:3001"
+    expose:
+      - "3001"
+    volumes:
+      - ./server:/app
+
+  frontend: 
+    build: 
+      context: ./client 
+      target: development
+    ports:
+      - "3000:3000"
+    expose:
+      - "3000"
+    volumes:
+      - ./client/src:/app/src
+  

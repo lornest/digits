@@ -9,7 +9,7 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-const port = "3000"
+const port = "3001"
 
 func main() {
 	srv := &http.Server{
