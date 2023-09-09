@@ -35,14 +35,11 @@ jobs:
         run: go test ./...
 
       - name: Build server
-        run: go build -o digits ./...
-
-      - name: list
-        run: ls -la 
+        run: go build -o bin/digits ./...
 
       - name: Upload binary artifact
         uses: actions/upload-artifact@v3
         with:
           name: digits 
-          path: ./digits
+          path: bin/digits
 
