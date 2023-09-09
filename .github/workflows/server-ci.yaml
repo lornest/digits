@@ -38,7 +38,10 @@ jobs:
         run: go build -o digits-server ./...
 
       - name: Upload binary artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: digits-server 
-          path: digits-server
+          path: ./digits-server
+
+      - name: list
+        run: ls -la 
