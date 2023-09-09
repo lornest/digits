@@ -1,4 +1,4 @@
-name: Server build & publish
+name: Server CI 
 
 on:
   push:
@@ -34,3 +34,11 @@ jobs:
       - name: Test 
         run: go test ./...
 
+      - name: Build server
+        run: go build -o digits-server ./...
+
+      - name: Upload binary artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: digits-server 
+          path: digits-server
