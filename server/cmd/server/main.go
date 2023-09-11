@@ -1,10 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -32,9 +32,18 @@ func routes() http.Handler {
 
 	r.Route("/games", func(r chi.Router) {
 		r.Get("/today", func(w http.ResponseWriter, r *http.Request) {
-			currentDate := time.Now()
-
-			w.Write([]byte("Today's games:" + currentDate.String()))
+			games := DailyGames{
+				GameDay: 1,
+				Games: []Game{
+					{
+						Round:            1,
+						Target:           51,
+						GuessableNumbers: []int{1, 2, 3, 10, 15, 20},
+					},
+				},
+			}
+			resp, _ := json.Marshal(games)
+			w.Write(resp)
 		})
 	})
 
