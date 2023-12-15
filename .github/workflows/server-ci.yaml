@@ -51,15 +51,8 @@ jobs:
           push: true
           tags: lornest/digits:latest
 
-      - name: Run curl command
-        run: |
-          curl --request POST "https://api.humanitec.io/orgs/gl-uki/artefact-versions" \
-          --header "Authorization: Bearer ${{ secrets.HUMANITEC_TOKEN }}" \
-          --header "Content-Type: application/json" \
-          --data-raw '{ 
-            "name": "digits-server",
-            "version": "'${{ github.sha }}'",
-            "type": "container",
-            "commit": "'${{ github.sha }}'",
-            "ref": "'${{ github.ref }}'"
-          }'
+      - name: Push to Humanitec
+        uses: humanitec/build-push-to-humanitec@v1
+          with:
+            humanitec-token: ${{ secrets.HUMANITEC_TOKEN }}
+            organisation: gl-uki
