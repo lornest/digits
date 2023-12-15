@@ -53,6 +53,6 @@ jobs:
 
       - name: Push to Humanitec
         uses: humanitec/build-push-to-humanitec@v1
-          with:
-            humanitec-token: ${{ secrets.HUMANITEC_TOKEN }}
-            organisation: gl-uki
+        with:
+          humanitec-token: ${{ secrets.HUMANITEC_TOKEN }}
+          organisation: gl-uki
