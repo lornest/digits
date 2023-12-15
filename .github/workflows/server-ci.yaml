@@ -50,3 +50,16 @@ jobs:
           # file: ./server/Dockerfile
           push: true
           tags: lornest/digits:latest
+
+      - name: Run curl command
+          run: |
+            curl --request POST "https://api.humanitec.io/orgs/gl-uki/artefact-versions" \
+            --header "Authorization: Bearer ${{ secrets.HUMANITEC_TOKEN }}" \
+            --header "Content-Type: application/json" \
+            --data-raw '{ 
+              "name": "'${{ digits-server }}'",
+              "version": "'${{ github.sha }}'",
+              "type": "container",
+              "commit": "'${{ github.sha }}'",
+              "ref": "'${{ github.ref }}'"
+            }'
