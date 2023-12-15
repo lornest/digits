@@ -57,7 +57,7 @@ jobs:
           --header "Authorization: Bearer ${{ secrets.HUMANITEC_TOKEN }}" \
           --header "Content-Type: application/json" \
           --data-raw '{ 
-            "name": "'${{ digits-server }}'",
+            "name": "digits-server",
             "version": "'${{ github.sha }}'",
             "type": "container",
             "commit": "'${{ github.sha }}'",
