@@ -98,8 +98,9 @@ export function useGame(initialDifficulty: Difficulty = 'medium') {
       result,
     };
 
-    const newNumbers = gameState.numbers.filter((_, i) => i !== idx1 && i !== idx2);
-    newNumbers.push(result);
+    const newNumbers = gameState.numbers
+      .map((num, i) => i === idx2 ? result : num)
+      .filter((_, i) => i !== idx1);
 
     const isWon = result === gameState.target;
     const stars = isWon ? 3 : calculateStars(getClosestToTarget(newNumbers, gameState.target), gameState.target);
