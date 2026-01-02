@@ -1,0 +1,64 @@
+.move-history {
+  width: 100%;
+  max-width: 300px;
+  padding: 16px;
+  background: #fafafa;
+  border-radius: 12px;
+  min-height: 100px;
+}
+
+.move-history.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #888;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.move-history h3 {
+  margin: 0 0 12px 0;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #666;
+}
+
+.moves-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.move-item {
+  display: flex;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #fff;
+  border-radius: 8px;
+  font-size: 1rem;
+  animation: slide-in 0.3s ease;
+}
+
+.move-number {
+  color: #888;
+  min-width: 24px;
+}
+
+.move-equation {
+  font-weight: 500;
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
