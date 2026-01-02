@@ -22,6 +22,7 @@ export function useGame(initialDifficulty: Difficulty = 'medium') {
       moves: [],
       difficulty: initialDifficulty,
       isWon: false,
+      isGameOver: false,
       stars: 0,
     };
   });
@@ -103,6 +104,7 @@ export function useGame(initialDifficulty: Difficulty = 'medium') {
       .filter((_, i) => i !== idx1);
 
     const isWon = result === gameState.target;
+    const isGameOver = isWon || newNumbers.length === 1;
     const stars = isWon ? 3 : calculateStars(getClosestToTarget(newNumbers, gameState.target), gameState.target);
 
     setGameState(prev => ({
@@ -110,6 +112,7 @@ export function useGame(initialDifficulty: Difficulty = 'medium') {
       numbers: newNumbers,
       moves: [...prev.moves, newMove],
       isWon,
+      isGameOver,
       stars,
     }));
 
@@ -139,6 +142,7 @@ export function useGame(initialDifficulty: Difficulty = 'medium') {
       numbers: previousState.numbers,
       moves: previousState.moves,
       isWon: false,
+      isGameOver: false,
       stars: calculateStars(getClosestToTarget(previousState.numbers, prev.target), prev.target),
     }));
 
@@ -156,6 +160,7 @@ export function useGame(initialDifficulty: Difficulty = 'medium') {
       numbers: initialState.numbers,
       moves: [],
       isWon: false,
+      isGameOver: false,
       stars: 0,
     }));
 
@@ -172,6 +177,7 @@ export function useGame(initialDifficulty: Difficulty = 'medium') {
       moves: [],
       difficulty: diff,
       isWon: false,
+      isGameOver: false,
       stars: 0,
     });
 

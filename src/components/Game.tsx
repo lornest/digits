@@ -38,15 +38,14 @@ export function Game() {
     }
   }, [gameState.moves.length, gameState.numbers.length]);
 
-  // Show celebration on win
   useEffect(() => {
-    if (gameState.isWon) {
+    if (gameState.isGameOver) {
       const timer = setTimeout(() => setShowCelebration(true), 600);
       return () => clearTimeout(timer);
     } else {
       setShowCelebration(false);
     }
-  }, [gameState.isWon]);
+  }, [gameState.isGameOver]);
 
   const handleNewPuzzle = () => {
     setShowCelebration(false);

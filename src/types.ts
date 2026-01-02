@@ -13,6 +13,7 @@ export interface GameState {
   moves: Move[];
   difficulty: Difficulty;
   isWon: boolean;
+  isGameOver: boolean;
   stars: number;
 }
 

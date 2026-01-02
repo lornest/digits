@@ -34,7 +34,8 @@ export const WinCelebration = memo(function WinCelebration({
   const getMessage = () => {
     if (stars === 3) return 'Perfect!';
     if (stars === 2) return 'Great job!';
-    return 'Good effort!';
+    if (stars === 1) return 'Good effort!';
+    return 'Nice try!';
   };
 
   return (
@@ -42,7 +43,7 @@ export const WinCelebration = memo(function WinCelebration({
       <div className="win-modal">
         <h2>{getMessage()}</h2>
         <p className="target-reached">
-          {stars === 3 ? `You reached ${target}!` : `Close to ${target}!`}
+          {stars === 3 ? `You reached ${target}!` : stars > 0 ? `Close to ${target}!` : `Target was ${target}`}
         </p>
         <div className="win-stars">
           {[1, 2, 3].map((star) => (
