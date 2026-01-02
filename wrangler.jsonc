@@ -1,0 +1,14 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "digits",
+	"compatibility_date": "2024-12-01",
+	"assets": {
+		"directory": "./dist"
+	},
+	"routes": [
+		{
+			"pattern": "digits.lornest.dev",
+			"custom_domain": true
+		}
+	]
+}

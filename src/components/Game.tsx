@@ -16,6 +16,7 @@ export function Game() {
   const {
     gameState,
     selectedNumbers,
+    selectedOperator,
     canUndo,
     selectNumber,
     applyOperator,
@@ -55,7 +56,7 @@ export function Game() {
   return (
     <div className="game">
       <header className="game-header">
-        <h1>Digits</h1>
+        <h1>Digits(ish)</h1>
         <DifficultySelector
           current={gameState.difficulty}
           onChange={changeDifficulty}
@@ -85,7 +86,8 @@ export function Game() {
             <OperatorButton
               key={op}
               operator={op}
-              disabled={selectedNumbers.length !== 2}
+              disabled={selectedNumbers.length === 0}
+              isSelected={selectedOperator === op}
               onClick={() => applyOperator(op)}
             />
           ))}

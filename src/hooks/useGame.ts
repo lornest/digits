@@ -8,6 +8,11 @@ interface GameHistory {
   moves: Move[];
 }
 
+interface SelectionState {
+  firstNumberIndex: number | null;
+  operator: Operator | null;
+}
+
 export function useGame(initialDifficulty: Difficulty = 'medium') {
   const [gameState, setGameState] = useState<GameState>(() => {
     const puzzle = generatePuzzle(initialDifficulty);
@@ -22,42 +27,65 @@ export function useGame(initialDifficulty: Difficulty = 'medium') {
   });
 
   const [history, setHistory] = useState<GameHistory[]>([]);
-  const [selectedNumbers, setSelectedNumbers] = useState<number[]>([]);
+  const [selection, setSelection] = useState<SelectionState>({
+    firstNumberIndex: null,
+    operator: null,
+  });
+
+  const selectedNumbers = selection.firstNumberIndex !== null ? [selection.firstNumberIndex] : [];
 
   const selectNumber = useCallback((index: number) => {
-    setSelectedNumbers(prev => {
-      if (prev.includes(index)) {
-        return prev.filter(i => i !== index);
+    setSelection(prev => {
+      if (prev.firstNumberIndex === null) {
+        return { firstNumberIndex: index, operator: null };
       }
-      if (prev.length < 2) {
-        return [...prev, index];
+      
+      if (prev.firstNumberIndex === index) {
+        return { firstNumberIndex: null, operator: null };
       }
-      return [index];
+      
+      if (prev.operator === null) {
+        return { firstNumberIndex: index, operator: null };
+      }
+      
+      return prev;
     });
   }, []);
 
-  const applyOperator = useCallback((operator: Operator) => {
-    if (selectedNumbers.length !== 2) return;
+  const selectOperator = useCallback((operator: Operator) => {
+    if (selection.firstNumberIndex === null) return;
+    
+    setSelection(prev => ({
+      ...prev,
+      operator,
+    }));
+  }, [selection.firstNumberIndex]);
 
-    const [idx1, idx2] = selectedNumbers;
+  const applySecondNumber = useCallback((secondIndex: number) => {
+    if (selection.firstNumberIndex === null || selection.operator === null) return;
+    if (secondIndex === selection.firstNumberIndex) return;
+
+    const idx1 = selection.firstNumberIndex;
+    const idx2 = secondIndex;
     const num1 = gameState.numbers[idx1];
     const num2 = gameState.numbers[idx2];
+    const operator = selection.operator;
 
-    // Try both orders for non-commutative operations
     let result = applyOperation(num1, num2, operator);
     let finalNum1 = num1;
     let finalNum2 = num2;
 
     if (result === null || result <= 0) {
-      // Try reverse order
       result = applyOperation(num2, num1, operator);
       finalNum1 = num2;
       finalNum2 = num1;
     }
 
-    if (result === null || result <= 0) return;
+    if (result === null || result <= 0) {
+      setSelection({ firstNumberIndex: null, operator: null });
+      return;
+    }
 
-    // Save current state to history for undo
     setHistory(prev => [...prev, {
       numbers: [...gameState.numbers],
       moves: [...gameState.moves],
@@ -70,11 +98,9 @@ export function useGame(initialDifficulty: Difficulty = 'medium') {
       result,
     };
 
-    // Create new numbers array
     const newNumbers = gameState.numbers.filter((_, i) => i !== idx1 && i !== idx2);
     newNumbers.push(result);
 
-    // Check if won
     const isWon = result === gameState.target;
     const stars = isWon ? 3 : calculateStars(getClosestToTarget(newNumbers, gameState.target), gameState.target);
 
@@ -86,8 +112,20 @@ export function useGame(initialDifficulty: Difficulty = 'medium') {
       stars,
     }));
 
-    setSelectedNumbers([]);
-  }, [selectedNumbers, gameState]);
+    setSelection({ firstNumberIndex: null, operator: null });
+  }, [selection, gameState]);
+
+  const handleNumberClick = useCallback((index: number) => {
+    if (selection.firstNumberIndex !== null && selection.operator !== null && index !== selection.firstNumberIndex) {
+      applySecondNumber(index);
+    } else {
+      selectNumber(index);
+    }
+  }, [selection, selectNumber, applySecondNumber]);
+
+  const applyOperator = useCallback((operator: Operator) => {
+    selectOperator(operator);
+  }, [selectOperator]);
 
   const undo = useCallback(() => {
     if (history.length === 0) return;
@@ -103,7 +141,7 @@ export function useGame(initialDifficulty: Difficulty = 'medium') {
       stars: calculateStars(getClosestToTarget(previousState.numbers, prev.target), prev.target),
     }));
 
-    setSelectedNumbers([]);
+    setSelection({ firstNumberIndex: null, operator: null });
   }, [history]);
 
   const reset = useCallback(() => {
@@ -120,7 +158,7 @@ export function useGame(initialDifficulty: Difficulty = 'medium') {
       stars: 0,
     }));
 
-    setSelectedNumbers([]);
+    setSelection({ firstNumberIndex: null, operator: null });
   }, [history]);
 
   const newPuzzle = useCallback((difficulty?: Difficulty) => {
@@ -137,7 +175,7 @@ export function useGame(initialDifficulty: Difficulty = 'medium') {
     });
 
     setHistory([]);
-    setSelectedNumbers([]);
+    setSelection({ firstNumberIndex: null, operator: null });
   }, [gameState.difficulty]);
 
   const changeDifficulty = useCallback((difficulty: Difficulty) => {
@@ -147,8 +185,9 @@ export function useGame(initialDifficulty: Difficulty = 'medium') {
   return {
     gameState,
     selectedNumbers,
+    selectedOperator: selection.operator,
     canUndo: history.length > 0,
-    selectNumber,
+    selectNumber: handleNumberClick,
     applyOperator,
     undo,
     reset,
