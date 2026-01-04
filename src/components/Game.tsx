@@ -18,33 +18,33 @@ export function Game() {
     selectedNumbers,
     selectedOperator,
     canUndo,
+    lastResultIndex,
     selectNumber,
     applyOperator,
     undo,
     reset,
     newPuzzle,
     changeDifficulty,
+    clearLastResultIndex,
   } = useGame('medium');
 
-  const [newNumberIndex, setNewNumberIndex] = useState<number | null>(null);
   const [showCelebration, setShowCelebration] = useState(false);
 
-  // Track new numbers for animation
   useEffect(() => {
-    if (gameState.moves.length > 0) {
-      setNewNumberIndex(gameState.numbers.length - 1);
-      const timer = setTimeout(() => setNewNumberIndex(null), 400);
+    if (lastResultIndex !== null) {
+      const timer = setTimeout(() => clearLastResultIndex(), 400);
       return () => clearTimeout(timer);
     }
-  }, [gameState.moves.length, gameState.numbers.length]);
+  }, [lastResultIndex, clearLastResultIndex]);
 
   useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
     if (gameState.isGameOver) {
-      const timer = setTimeout(() => setShowCelebration(true), 600);
-      return () => clearTimeout(timer);
+      timer = setTimeout(() => setShowCelebration(true), 600);
     } else {
-      setShowCelebration(false);
+      timer = setTimeout(() => setShowCelebration(false), 0);
     }
+    return () => clearTimeout(timer);
   }, [gameState.isGameOver]);
 
   const handleNewPuzzle = () => {
@@ -74,7 +74,7 @@ export function Game() {
               key={`${num}-${index}-${gameState.moves.length}`}
               number={num}
               isSelected={selectedNumbers.includes(index)}
-              isNew={index === newNumberIndex}
+              isNew={index === lastResultIndex}
               onClick={() => selectNumber(index)}
             />
           ))}

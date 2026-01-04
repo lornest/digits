@@ -8,11 +8,11 @@ export function applyOperation(a: number, b: number, op: Operator): number | nul
       return a - b;
     case '×':
       return a * b;
-    case '÷':
-      // Division only allowed if result is a whole number
+    case '÷': {
       if (b === 0) return null;
       const result = a / b;
       return Number.isInteger(result) ? result : null;
+    }
     default:
       return null;
   }

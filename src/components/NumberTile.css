@@ -12,6 +12,12 @@
   font-family: 'NYT-Franklin', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
+.number-tile.empty {
+  border: 2px dashed #ccc;
+  background: transparent;
+  cursor: default;
+}
+
 .number-tile:hover {
   transform: scale(1.05);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);

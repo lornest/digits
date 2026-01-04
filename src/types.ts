@@ -8,7 +8,7 @@ export interface Move {
 }
 
 export interface GameState {
-  numbers: number[];
+  numbers: (number | null)[];
   target: number;
   moves: Move[];
   difficulty: Difficulty;

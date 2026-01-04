@@ -10,10 +10,11 @@ function reverseOperation(result: number, operand: number, op: Operator): number
       return result - operand;
     case '-':
       return result + operand;
-    case '×':
+    case '×': {
       if (operand === 0) return null;
       const divResult = result / operand;
       return Number.isInteger(divResult) ? divResult : null;
+    }
     case '÷':
       return result * operand;
     default:
@@ -82,8 +83,7 @@ function tryGeneratePuzzle(config: DifficultyConfig, difficulty: Difficulty): Pu
   const numbers: number[] = [];
   const solution: Move[] = [];
 
-  // Start with target and work backwards
-  let currentNumbers = [target];
+  const currentNumbers = [target];
 
   for (let step = 0; step < config.steps; step++) {
     // Pick a number to "split"
@@ -197,8 +197,9 @@ export function calculateStars(current: number, target: number): number {
   return 0;
 }
 
-export function getClosestToTarget(numbers: number[], target: number): number {
-  return numbers.reduce((closest, num) => {
+export function getClosestToTarget(numbers: (number | null)[], target: number): number {
+  const validNumbers = numbers.filter((n): n is number => n !== null);
+  return validNumbers.reduce((closest, num) => {
     return Math.abs(num - target) < Math.abs(closest - target) ? num : closest;
-  }, numbers[0]);
+  }, validNumbers[0]);
 }

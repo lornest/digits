@@ -4,7 +4,7 @@ import { generatePuzzle, calculateStars, getClosestToTarget } from '../utils/puz
 import { applyOperation } from '../utils/operations';
 
 interface GameHistory {
-  numbers: number[];
+  numbers: (number | null)[];
   moves: Move[];
 }
 
@@ -32,6 +32,7 @@ export function useGame(initialDifficulty: Difficulty = 'medium') {
     firstNumberIndex: null,
     operator: null,
   });
+  const [lastResultIndex, setLastResultIndex] = useState<number | null>(null);
 
   const selectedNumbers = selection.firstNumberIndex !== null ? [selection.firstNumberIndex] : [];
 
@@ -70,6 +71,12 @@ export function useGame(initialDifficulty: Difficulty = 'medium') {
     const idx2 = secondIndex;
     const num1 = gameState.numbers[idx1];
     const num2 = gameState.numbers[idx2];
+    
+    if (num1 === null || num2 === null) {
+      setSelection({ firstNumberIndex: null, operator: null });
+      return;
+    }
+    
     const operator = selection.operator;
 
     let result = applyOperation(num1, num2, operator);
@@ -99,12 +106,15 @@ export function useGame(initialDifficulty: Difficulty = 'medium') {
       result,
     };
 
-    const newNumbers = gameState.numbers
-      .map((num, i) => i === idx2 ? result : num)
-      .filter((_, i) => i !== idx1);
+    const newNumbers = gameState.numbers.map((num, i) => {
+      if (i === idx2) return result;
+      if (i === idx1) return null;
+      return num;
+    });
 
+    const remainingNumbers = newNumbers.filter((n): n is number => n !== null);
     const isWon = result === gameState.target;
-    const isGameOver = isWon || newNumbers.length === 1;
+    const isGameOver = isWon || remainingNumbers.length === 1;
     const stars = isWon ? 3 : calculateStars(getClosestToTarget(newNumbers, gameState.target), gameState.target);
 
     setGameState(prev => ({
@@ -116,6 +126,7 @@ export function useGame(initialDifficulty: Difficulty = 'medium') {
       stars,
     }));
 
+    setLastResultIndex(idx2);
     setSelection({ firstNumberIndex: null, operator: null });
   }, [selection, gameState]);
 
@@ -189,16 +200,22 @@ export function useGame(initialDifficulty: Difficulty = 'medium') {
     newPuzzle(difficulty);
   }, [newPuzzle]);
 
+  const clearLastResultIndex = useCallback(() => {
+    setLastResultIndex(null);
+  }, []);
+
   return {
     gameState,
     selectedNumbers,
     selectedOperator: selection.operator,
     canUndo: history.length > 0,
+    lastResultIndex,
     selectNumber: handleNumberClick,
     applyOperator,
     undo,
     reset,
     newPuzzle,
     changeDifficulty,
+    clearLastResultIndex,
   };
 }

@@ -17,16 +17,20 @@ export const WinCelebration = memo(function WinCelebration({
   const [confetti, setConfetti] = useState<{ id: number; left: number; delay: number }[]>([]);
 
   useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
     if (isVisible && stars === 3) {
-      const particles = Array.from({ length: 50 }, (_, i) => ({
-        id: i,
-        left: Math.random() * 100,
-        delay: Math.random() * 0.5,
-      }));
-      setConfetti(particles);
+      timer = setTimeout(() => {
+        const particles = Array.from({ length: 50 }, (_, i) => ({
+          id: i,
+          left: Math.random() * 100,
+          delay: Math.random() * 0.5,
+        }));
+        setConfetti(particles);
+      }, 0);
     } else {
-      setConfetti([]);
+      timer = setTimeout(() => setConfetti([]), 0);
     }
+    return () => clearTimeout(timer);
   }, [isVisible, stars]);
 
   if (!isVisible) return null;
