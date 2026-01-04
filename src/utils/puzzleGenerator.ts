@@ -44,7 +44,7 @@ interface DifficultyConfig {
 
 const DIFFICULTY_CONFIG: Record<Difficulty, DifficultyConfig> = {
   easy: {
-    targetRange: [20, 100],
+    targetRange: [40, 100],
     steps: 3,
     smallPool: [1, 2, 3, 4, 5, 6, 7, 8, 9],
     largePool: [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25],
