@@ -37,29 +37,29 @@ function shuffle<T>(array: T[]): T[] {
 
 interface DifficultyConfig {
   targetRange: [number, number];
-  operandRange: [number, number];
   steps: number;
-  smallNumbers: number[];
+  smallPool: number[];  // Numbers 1-9 (top row)
+  largePool: number[];  // Numbers 10-25 (bottom row)
 }
 
 const DIFFICULTY_CONFIG: Record<Difficulty, DifficultyConfig> = {
   easy: {
     targetRange: [20, 100],
-    operandRange: [1, 10],
     steps: 3,
-    smallNumbers: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    smallPool: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+    largePool: [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25],
   },
   medium: {
     targetRange: [100, 300],
-    operandRange: [2, 15],
     steps: 4,
-    smallNumbers: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15],
+    smallPool: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+    largePool: [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25],
   },
   hard: {
     targetRange: [200, 500],
-    operandRange: [3, 25],
     steps: 5,
-    smallNumbers: [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15, 20, 25],
+    smallPool: [2, 3, 4, 5, 6, 7, 8, 9],  // Exclude 1 from hard mode
+    largePool: [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25],
   },
 };
 
@@ -78,37 +78,45 @@ export function generatePuzzle(difficulty: Difficulty): Puzzle {
   return generateFallbackPuzzle(difficulty);
 }
 
+function isSmallNumber(n: number): boolean {
+  return n >= 1 && n <= 9;
+}
+
+function isLargeNumber(n: number): boolean {
+  return n >= 10 && n <= 25;
+}
+
+function pickRandomFromPool(pool: number[], exclude: number[] = []): number {
+  const available = pool.filter(n => !exclude.includes(n));
+  if (available.length === 0) return pool[getRandomInt(0, pool.length - 1)];
+  return available[getRandomInt(0, available.length - 1)];
+}
+
 function tryGeneratePuzzle(config: DifficultyConfig, difficulty: Difficulty): Puzzle | null {
   const target = getRandomInt(config.targetRange[0], config.targetRange[1]);
-  const numbers: number[] = [];
   const solution: Move[] = [];
+  const allPools = shuffle([...config.smallPool, ...config.largePool]);
 
   const currentNumbers = [target];
 
   for (let step = 0; step < config.steps; step++) {
-    // Pick a number to "split"
     const numIndex = getRandomInt(0, currentNumbers.length - 1);
     const numToSplit = currentNumbers[numIndex];
 
-    // Try to find a valid reverse operation
     const validOps = shuffle([...OPERATORS]);
     let found = false;
 
     for (const op of validOps) {
-      // Generate an operand
-      const operandCandidates = shuffle([...config.smallNumbers]);
+      const operandCandidates = shuffle([...allPools]);
 
       for (const operand of operandCandidates) {
         const newNum = reverseOperation(numToSplit, operand, op);
 
         if (newNum !== null && newNum > 0 && newNum <= 999 && Number.isInteger(newNum)) {
-          // Verify forward operation works
           const forwardResult = applyOperation(newNum, operand, op);
           if (forwardResult === numToSplit) {
-            // Valid split found
             currentNumbers.splice(numIndex, 1, newNum, operand);
 
-            // Record the forward move (for solution)
             solution.unshift({
               num1: newNum,
               num2: operand,
@@ -126,21 +134,46 @@ function tryGeneratePuzzle(config: DifficultyConfig, difficulty: Difficulty): Pu
     }
 
     if (!found) {
-      return null; // Failed to generate this puzzle
+      return null;
     }
   }
 
-  // Add some random small numbers to get to 6 total
-  while (currentNumbers.length < 6) {
-    const smallNum = config.smallNumbers[getRandomInt(0, config.smallNumbers.length - 1)];
-    currentNumbers.push(smallNum);
+  const generated = currentNumbers.slice(0, 6);
+  const smallNumbers = generated.filter(isSmallNumber);
+  const largeNumbers = generated.filter(isLargeNumber);
+  const otherNumbers = generated.filter(n => !isSmallNumber(n) && !isLargeNumber(n));
+
+  if (otherNumbers.length > 0) {
+    return null;
   }
 
-  // Limit to 6 numbers and shuffle
-  numbers.push(...shuffle(currentNumbers.slice(0, 6)));
+  const finalSmall: number[] = [...smallNumbers];
+  const finalLarge: number[] = [...largeNumbers];
+
+  while (finalSmall.length < 3) {
+    finalSmall.push(pickRandomFromPool(config.smallPool, finalSmall));
+  }
+
+  while (finalLarge.length < 3) {
+    finalLarge.push(pickRandomFromPool(config.largePool, finalLarge));
+  }
+
+  if (finalSmall.length > 3 || finalLarge.length > 3) {
+    return null;
+  }
+
+  const countOfOnes = finalSmall.filter(n => n === 1).length;
+  if (countOfOnes > 1) {
+    return null;
+  }
+
+  const startingNumbers = [
+    ...finalSmall.sort((a, b) => a - b),
+    ...finalLarge.sort((a, b) => a - b),
+  ];
 
   return {
-    startingNumbers: numbers,
+    startingNumbers,
     target,
     difficulty,
     solution,
@@ -148,40 +181,32 @@ function tryGeneratePuzzle(config: DifficultyConfig, difficulty: Difficulty): Pu
 }
 
 function generateFallbackPuzzle(difficulty: Difficulty): Puzzle {
-  // Pre-made puzzles for each difficulty
   const fallbacks: Record<Difficulty, Puzzle> = {
     easy: {
-      startingNumbers: [2, 3, 5, 7, 10, 4],
+      startingNumbers: [2, 3, 7, 10, 14, 20],
       target: 42,
       difficulty: 'easy',
       solution: [
-        { num1: 7, num2: 5, operator: '+', result: 12 },
-        { num1: 12, num2: 3, operator: '×', result: 36 },
-        { num1: 36, num2: 4, operator: '+', result: 40 },
-        { num1: 40, num2: 2, operator: '+', result: 42 },
+        { num1: 20, num2: 14, operator: '-', result: 6 },
+        { num1: 7, num2: 6, operator: '×', result: 42 },
       ],
     },
     medium: {
-      startingNumbers: [3, 7, 11, 15, 20, 5],
+      startingNumbers: [3, 5, 7, 11, 13, 20],
       target: 156,
       difficulty: 'medium',
       solution: [
-        { num1: 15, num2: 5, operator: '-', result: 10 },
-        { num1: 11, num2: 10, operator: '+', result: 21 },
-        { num1: 21, num2: 7, operator: '×', result: 147 },
-        { num1: 147, num2: 3, operator: '+', result: 150 },
+        { num1: 7, num2: 5, operator: '+', result: 12 },
+        { num1: 13, num2: 12, operator: '×', result: 156 },
       ],
     },
     hard: {
-      startingNumbers: [4, 7, 11, 13, 19, 25],
+      startingNumbers: [2, 4, 9, 12, 18, 25],
       target: 324,
       difficulty: 'hard',
       solution: [
-        { num1: 25, num2: 11, operator: '+', result: 36 },
-        { num1: 36, num2: 4, operator: '÷', result: 9 },
-        { num1: 9, num2: 7, operator: '+', result: 16 },
-        { num1: 19, num2: 13, operator: '+', result: 32 },
-        { num1: 16, num2: 32, operator: '×', result: 512 },
+        { num1: 25, num2: 2, operator: '+', result: 27 },
+        { num1: 12, num2: 27, operator: '×', result: 324 },
       ],
     },
   };
